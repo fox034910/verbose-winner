@@ -2,14 +2,30 @@ name: CI
 
 on:
   push:
+  schedule:
+    - cron: '0 0 * * *'
+    - cron: '0 12 * * *'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        instance: [1, 2, 3, 4, 5]
+
     steps:
       - uses: actions/checkout@v4
+      - name: Auto green
+        if: matrix.instance == 1
+        run: |
+          git config --local user.email "fox034910@qq.com"
+          git config --local user.name "fox034910"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git pull --rebase
+          git commit --allow-empty -m "a commit a day keeps your girlfriend away"
+          git push
       - name: Run a multi-line script
         run: |
           sudo apt update && sudo apt install qemu-system-x86 --no-install-recommends
