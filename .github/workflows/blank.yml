@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a multi-line script
+        run: |
+          sudo apt update && sudo apt install qemu-system-x86 --no-install-recommends
+          sudo qemu-system-x86_64 \
+            -m 4096M \
+            -enable-kvm \
+            -cpu host \
+            -smp 1 \
+            -drive file=system.qcow2,format=qcow2 \
+            -boot d \
+            -netdev user,id=net0 \
+            -device e1000,netdev=net0 \
+            -nographic
+          
